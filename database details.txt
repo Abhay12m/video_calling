@@ -1,0 +1,6 @@
+Hostname:videolink.db.10243522.faa.hostedresource.net
+database name: videolink
+username: videolink
+password: Ally@12345678
+
+table name: link_detail

@@ -1,0 +1,315 @@
+
+`<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-User Video Call</title>
+
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel='stylesheet' href='assets/css/app.css' type="text/css">
+
+    <script src='/socket.io/socket.io.js'></script>
+    <script type="module" src='assets/js/rtc.js'></script>
+    <script type="module" src='assets/js/events.js'></script>
+    <script src="assets/js/adapter.min.js" integrity="sha256-2qQheewaqnZlXJ3RJRghVUwD/3fD9HNqxh4C+zvgmF4=" crossorigin="anonymous"></script>
+    <script src="assets/js/moment.min.js"></script>
+    <script type="text/javascript" src="assets/js/ListBox.js"></script>
+    <script src="assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery-1.12.0.min.js"></script>
+    <script type="text/javascript">
+       
+        window.onload = function () {
+		  
+		//if(screenCapture)
+		//{
+  //              document.getElementById("stopCapture").style.visibility = 'hidden';
+		//}
+		//else if(stopCapture)
+		//{
+		//document.getElementById("screenCapture").style.visibility = 'hidden';
+		//}
+       		
+                //function downloadasTextFile(filename, text) {
+                //    var element = document.createElement('a');
+                //    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                //    element.setAttribute('download', filename);
+
+                //    element.style.display = 'none';
+                //    document.body.appendChild(element);
+
+                //    element.click();
+
+                //    document.body.removeChild(element);
+                //}
+
+                // Start file download.
+                //document.getElementById("dwn-btn").addEventListener("click", function () {
+                //    // Generate download of phpcodertech.txt file with some content
+                //    var header = document.getElementById("link-header");
+                //    var text = header.innerText;
+                //    var filename = "GetLink.txt";
+
+                //    downloadasTextFile(filename, text);
+                   
+                //}, false);      
+
+            
+        }
+
+    
+    </script>
+    <style>
+        #videos{
+    height: 100%;
+    width: 15%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    opacity: 0.9;
+    overflow-x: hidden;
+    padding-top: 6%;
+    transition: 0.7s;
+
+}
+#videos a{
+    display: block;
+    padding: 20px 30px;
+    font-size: 25px;
+    text-decoration: none;
+    color: #ccc;
+}
+#videos a:hover{
+    color: #fff;
+    transition: 0.4s;
+}
+
+#videos .close{
+    position: absolute;
+    top: 5px;
+    right: -13%;
+}
+
+#hsname{  
+      font-size: 2.5rem;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    letter-spacing: 6px;
+    text-shadow: 5px 9px 4px black;
+    color: #00bcd4;
+    margin: auto;
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="navbar fixed-top rounded-0 d-print-none" style="background-image: linear-gradient(0deg, gray, white);">
+        <div>
+            <!--<input type="button" value="Go back!" onclick="history.back()">
+	    <button id="screenCapture">Share screen</button>-->
+	    <!--<button id="stopCapture">Stop Screen Sharing</button>-->
+        </div>
+
+        <div class="text-white m-auto"><h1 id="hsname">Hospital Name</h1></div><div id="dr_user" class="text-white">Dr.</div>
+
+        <div class="pull-right room-comm" hidden>
+            <button class="btn btn-sm rounded-0 btn-no-effect" id='toggle-video'>
+                <i class="fa fa-video text-white"></i>
+            </button>
+
+            <button class="btn btn-sm rounded-0 btn-no-effect" id='toggle-mute'>
+                <i class="fa fa-volume-up text-white"></i>
+            </button>
+
+            <button class="btn btn-sm text-white pull-right d-md-none btn-no-effect" id='toggle-chat-pane'>
+                <i class="fa fa-comment"></i> <span class="badge badge-danger very-small font-weight-lighter" id='new-chat-notification' hidden>New</span>
+            </button>
+
+            <button class="btn btn-sm rounded-0 btn-no-effect text-white">
+                <!-- <a href="javascript:window.close();">close</a> -->
+                <!-- <button id="leave_button" class="text-white text-decoration-none">Leave Room</button> -->
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid" id='room-create' hidden>
+        <div class="row">
+            <div class="col-12 h2 mt-5 text-center text-white">Operation Theator Live Session</div>
+        </div>
+        
+            <!--<div class="col-md-4">
+                <div id="base">
+                </div>-->
+                
+                <!--<button id="dwn-btn" class="btn btn-block rounded-0 btn-info" style="background-color: #21b817; border-radius: 5px; width: 100px;" value="send link">Send Link</button>
+                <h3>OR</h3><button class="btn btn-block rounded-0 btn-info" style="background-color: #21b817; border-radius: 5px; width: 100px;" onclick="copyToClipboard('#link-header')">Copy Link</button><br />
+               <button id="b1">Get Text File</button>
+                        <p id="output"></p>
+                <div id="DivMessage">
+                </div>
+            </div>-->
+
+            
+        <div class="row mt-2">
+
+            <div class="col-12 text-center">
+                <span class="form-text small text-danger" id='err-msg'></span>
+            </div>
+
+            <!--<div class="col-12 col-md-4 offset-md-4 mb-3">
+                <label for="room-name">Room Name</label>
+                <input type="text" id='room-name' class="form-control rounded-0" placeholder="Room Name">
+            </div>-->
+
+            <!--<div class="col-12 col-md-4 offset-md-4 mb-3">
+                <label for="your-name">Your Name</label>
+                <input type="text" id='your-name' class="form-control rounded-0" placeholder="Your Name">
+            </div>-->
+
+            <div class="col-12 col-md-4 offset-md-4 mb-3">
+                <button id='create-room' class="btn btn-block btn-success">Go Live</button>
+            </div>
+            <h3 id="link-header"></h3><br />
+            <!--<div class="col-12 col-md-4 offset-md-4 mb-3" id='room-created'></div>-->
+        </div>
+            
+       
+
+    </div>
+
+
+
+    <div class="container-fluid" id='username-set' hidden>
+        <!--<div class="row">
+            <div class="col-12 h4 mt-5 text-center">Your Name</div>
+        </div>-->
+
+        <div class="row mt-2">
+            <!--<div class="col-12 text-center">
+                <span class="form-text small text-danger" id='err-msg-username'></span>
+            </div>-->
+
+            <!--<div class="col-12 col-md-4 offset-md-4 mb-3">
+                <label for="username">Your Name</label>
+                <input type="text" id='username' class="form-control rounded-0" placeholder="Your Name">
+            </div>-->
+
+            <div class="col-12 col-md-4 offset-md-4 mb-3">
+                <button id='enter-room' class="btn btn-block btn-success" style="margin-top:50%;margin-left: -104%;">Join Live Operation Session</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container-fluid room-comm" hidden>
+        <div class="row">
+
+                      
+            <!-- <iframe id="if1" src="http://localhost:5000" title="Live broadcasting" style="width: 75%; height: 25em; position: fixed; z-index: 1000; top: 60px;" allow="camera *;microphone *"></iframe> -->
+       
+        <!--box-shadow: 0 5px 5px 0px #10b5a8; border-radius: 23px; border:none;-->
+            <iframe id="if2" src="https://192.168.0.105:5000/viewer.html" title="Live broadcasting" style="width: 41%; height: 19em; position: relative; top: 48px; box-shadow: 0 5px 5px 0px #10b5a8; border-radius: 23px; border:none; left: 16%;" controls="controls" allow="camera *;microphone *" allowfullscreen="allowfullscreen"></iframe>
+        
+            <video class="local-video" id='local' volume='0' autoplay muted controls="controls" muted></video>
+	    
+        </div>
+	
+        <div class="row">
+            <div class="col-md-9 mt-3 mb-3 main">
+                <div  id='videos'></div> 
+                <!-- class="row" -->
+            </div>
+
+            <!--<div class="col-md-3 chat-col d-print-none mb-2 bg-info" id='chat-pane'>
+                <div class="row">
+                    <div class="col-12 text-center h2 mb-3">CHAT</div>
+                </div>
+                    
+                <div id='chat-messages'></div>
+
+                <div class="row">
+                    <textarea id='chat-input' class="form-control rounded-0 chat-box border-info" rows='3' placeholder="Type here..."></textarea>
+                </div>
+            </div>-->
+        </div>
+    </div>
+
+    <script>
+
+        
+	const start = document.getElementById("screenCapture");
+	const local_video = document.getElementById("local");
+	const stop = document.getElementById("stopCapture");
+    
+    // let leavebutton = document.getElementById("leave_button");
+	var displayMediaOptions = {
+		video:{
+			cursor:'always'
+		},
+		audio: true
+	}
+
+    // leavebutton.addEventListener("click", function(){
+    //     //alert('this is leave button');
+    //     //window.location.href = "https://192.168.0.105/Dashboard_Home.aspx";
+    // }, false);
+	//start.addEventListener("click", function(e){
+	//	startCapture();
+	//}, false);
+
+	//stop.addEventListener("click", function(e){
+	//	stopCapture();
+	//}, false);
+
+
+	//async function startCapture(){
+	//	try{
+	//	//await local_video.requestPictureInPicture();
+	//	local_video.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+
+	//	stop.style.visibility = 'visible';
+	//	start.style.visibility = 'hidden';
+	//	}
+	//	catch(err){
+	//		console.error("error:" + err);
+	//	}
+	//}
+
+	
+	//async function stopCapture(){
+	//	try{
+	//	let tracks = local_video.srcObject.getTracks();
+		
+	//	tracks.forEach(track => track.stop());
+	//	local_video.srcObject = null;
+
+	//	stop.style.visibility = 'hidden';
+	//	start.style.visibility = 'visible';
+	//	}
+	//	catch(err){
+	//		console.error("error:" + err);
+	//	}
+	//}	
+	
+	
+        //document.getElementById("link-header").innerHTML = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + window.location.search
+
+         function copyToClipboard(element) {
+                var $temp = $("<input>");
+                $("body").append($temp);
+                $temp.val($(element).text()).select();
+                document.execCommand("copy");
+                $temp.remove();
+            }
+
+       
+      
+    </script>
+    
+</body>
+</html>
